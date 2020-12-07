@@ -148,6 +148,7 @@ add_custom_target(ncnn-generate-spirv DEPENDS ${NCNN_SHADER_SPV_HEX_FILES})
 
 # create new
 configure_file(layer_declaration.h.in ${CMAKE_CURRENT_BINARY_DIR}/layer_declaration.h)
+configure_file(layer_declaration_install.h.in ${CMAKE_CURRENT_BINARY_DIR}/layer_declaration_install.h)
 configure_file(layer_registry.h.in ${CMAKE_CURRENT_BINARY_DIR}/layer_registry.h)
 configure_file(layer_registry_avx2.h.in ${CMAKE_CURRENT_BINARY_DIR}/layer_registry_avx2.h)
 configure_file(layer_registry_arm82.h.in ${CMAKE_CURRENT_BINARY_DIR}/layer_registry_arm82.h)
@@ -350,6 +351,8 @@ if(NCNN_INSTALL_SDK)
         ${CMAKE_CURRENT_BINARY_DIR}/layer_shader_type_enum.h
         ${CMAKE_CURRENT_BINARY_DIR}/layer_type_enum.h
         ${CMAKE_CURRENT_BINARY_DIR}/platform.h
+        ${CMAKE_CURRENT_BINARY_DIR}/layer_declaration_install.h
+        ${CMAKE_CURRENT_BINARY_DIR}/layer_declaration.h
         DESTINATION include/ncnn
     )
     install(EXPORT ncnn DESTINATION lib/cmake/ncnn)
@@ -361,3 +364,5 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(TARGET ncnn PROPERTY FOLDER "libncnn")
 set_property(TARGET ncnn-generate-spirv PROPERTY FOLDER "libncnn")
+
+add_subdirectory(layer)

@@ -260,11 +260,11 @@ public:
     int extract(int blob_index, VkImageMat& feat, VkCompute& cmd);
 #endif // NCNN_VULKAN
 
-protected:
+public:
     friend Extractor Net::create_extractor() const;
     Extractor(const Net* net, size_t blob_count);
 
-private:
+public:
     const Net* net;
     std::vector<Mat> blob_mats;
     Option opt;

@@ -18,7 +18,7 @@ macro(ncnn_add_layer class)
 
         # look for arch specific implementation and append source
         # optimized implementation for armv7, aarch64 or x86
-        set(LAYER_ARCH_SRC ${CMAKE_CURRENT_SOURCE_DIR}/layer/${NCNN_TARGET_ARCH}/${name}_${NCNN_TARGET_ARCH}.cpp)
+        # set(LAYER_ARCH_SRC ${CMAKE_CURRENT_SOURCE_DIR}/layer/${NCNN_TARGET_ARCH}/${name}_${NCNN_TARGET_ARCH}.cpp)
         if(EXISTS ${LAYER_ARCH_SRC})
             set(WITH_LAYER_${name}_${NCNN_TARGET_ARCH} 1)
             list(APPEND ncnn_SRCS ${LAYER_ARCH_SRC})
@@ -34,6 +34,7 @@ macro(ncnn_add_layer class)
     # generate layer_declaration and layer_registry file
     if(WITH_LAYER_${name})
         set(layer_declaration "${layer_declaration}#include \"layer/${name}.h\"\n")
+        set(layer_declaration_install "${layer_declaration_install}#include \"layer/${name}.h\"\n")
         set(layer_declaration_class "class ${class}_final : virtual public ${class}")
         set(create_pipeline_content "        { int ret = ${class}::create_pipeline(opt); if (ret) return ret; }\n")
         set(destroy_pipeline_content "        { int ret = ${class}::destroy_pipeline(opt); if (ret) return ret; }\n")
@@ -73,6 +74,16 @@ macro(ncnn_add_layer class)
         set(layer_declaration "${layer_declaration}    virtual int destroy_pipeline(const Option& opt) {\n${destroy_pipeline_content}        return 0;\n    }\n")
         set(layer_declaration "${layer_declaration}};\n")
         set(layer_declaration "${layer_declaration}DEFINE_LAYER_CREATOR(${class}_final)\n} // namespace ncnn\n\n")
+    endif()
+
+    if(WITH_LAYER_${name})
+        set(layer_declaration_install "${layer_declaration_install}namespace ncnn {\n${layer_declaration_class}\n{\n")
+        set(layer_declaration_install "${layer_declaration_install}public:\n")
+        set(layer_declaration_install "${layer_declaration_install}    virtual int create_pipeline(const Option& opt) {\n${create_pipeline_content}        return 0;\n    }\n")
+        set(layer_declaration_install "${layer_declaration_install}    virtual int destroy_pipeline(const Option& opt) {\n${destroy_pipeline_content}        return 0;\n    }\n")
+        set(layer_declaration_install "${layer_declaration_install}};\n")
+        # set(layer_declaration_install "${layer_declaration_install}DEFINE_LAYER_CREATOR(${class}_final)\n} // namespace ncnn\n\n")
+        set(layer_declaration_install "${layer_declaration_install}\n} // namespace ncnn\n\n")
     endif()
 
     if(WITH_LAYER_${name})
